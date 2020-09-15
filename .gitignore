@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/Tallan.QuickStart.Config
+/obj
+/bin/Debug/netcoreapp3.1
+/Properties

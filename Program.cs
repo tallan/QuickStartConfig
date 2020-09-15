@@ -126,13 +126,16 @@ namespace Tallan.QuickStart.Config
 			builder.AddUserSecrets(appAssembly, optional: true);
 
 			// Add any JSON files we have
+			// Do not forget to set "Copy to Output Directory" on this file in your solution
 			builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 			// If you are not using Azure Key Vault you can remove this method
-			AddAzureKeyVault(debug, builder, initialConfig);
+			if (initialConfig["AzureKeyVaultUri"] != null)
+				AddAzureKeyVault(debug, builder, initialConfig);
 
 			// If you are not using Azure App Config you can remove this method
-			AddAzureAppConfig(debug, builder, initialConfig);
+			if ((debug && !string.IsNullOrEmpty(initialConfig["AzureAppConfigConnectionString"])) || (!debug && !string.IsNullOrEmpty(initialConfig["AzureKeyVaultUri"]) && !string.IsNullOrEmpty(initialConfig["AppId"])))
+				AddAzureAppConfig(debug, builder, initialConfig);
 
 			return builder.Build();
 		}
@@ -158,32 +161,40 @@ namespace Tallan.QuickStart.Config
 			// Please note that when you define a key in Azure App config it should be done with the following structure
 			// Example: AppConfig:Database:ConnectionString
 			// If you structure it like so it will automatically map to the AppConfig.cs object.  For this example it would map to AppConfig.Database.ConnectionString.
-			Action<AzureAppConfigurationOptions> azureAppConfigOptions;
-			if (debug)
+			try
 			{
-				azureAppConfigOptions = (options =>
+				Action<AzureAppConfigurationOptions> azureAppConfigOptions;
+				if (debug)
 				{
-					// If you are using Azure Key Vault, you can connect it into App Config, see **Add a Key Vault Reference to App Configuration**
-					options.ConfigureKeyVault(kv => { kv.SetCredential(new ClientSecretCredential(initialConfig["TenantId"], initialConfig["AppId"], initialConfig["AppSecret"])); });
+					azureAppConfigOptions = (options =>
+					{
+						// If you are using Azure Key Vault, you can connect it into App Config, see **Add a Key Vault Reference to App Configuration**
+						if (!string.IsNullOrEmpty(initialConfig["TenantId"]) && !string.IsNullOrEmpty(initialConfig["AppId"]) && !string.IsNullOrEmpty(initialConfig["AppSecret"]))
+							options.ConfigureKeyVault(kv => { kv.SetCredential(new ClientSecretCredential(initialConfig["TenantId"], initialConfig["AppId"], initialConfig["AppSecret"])); });
 
-					options.Connect(initialConfig["AzureAppConfigConnectionString"]);
-				});
+						options.Connect(initialConfig["AzureAppConfigConnectionString"]);
+					});
+				}
+				else
+				{
+					// This assumes you have setup a service principle to access the App Config on behalf of this app, see **Assign a Key Vault Access Policy** above
+					azureAppConfigOptions = (options =>
+					{
+						var credentials = new ManagedIdentityCredential(initialConfig["AppId"]);
+
+						// If you are using Azure Key Vault, you can connect it into App Config, see **Assign a Azure Config Access Policy**
+						options.ConfigureKeyVault(kv => { kv.SetCredential(credentials); });
+
+						options.Connect(new Uri(initialConfig["AzureKeyVaultUri"]), credentials);
+					});
+				}
+
+				builder.AddAzureAppConfiguration(azureAppConfigOptions);
 			}
-			else
+			catch (Exception ex)
 			{
-				// This assumes you have setup a service principle to access the App Config on behalf of this app, see **Assign a Key Vault Access Policy** above
-				azureAppConfigOptions = (options =>
-				{
-					var credentials = new ManagedIdentityCredential(initialConfig["AppId"]);
-
-					// If you are using Azure Key Vault, you can connect it into App Config, see **Assign a Azure Config Access Policy**
-					options.ConfigureKeyVault(kv => { kv.SetCredential(credentials); });
-
-					options.Connect(new Uri(initialConfig["AzureKeyVaultUri"]), credentials);
-				});
+				Console.WriteLine(ex);
 			}
-
-			builder.AddAzureAppConfiguration(azureAppConfigOptions);
 		}
 
 		/// <summary>
@@ -206,19 +217,31 @@ namespace Tallan.QuickStart.Config
 			// Please note that when you define a key in Azure Key Vault it should be done with the following structure
 			// Example: AppConfig:Database:ConnectionString
 			// If you structure it like so it will automatically map to the AppConfig.cs object.  For this example it would map to AppConfig.Database.ConnectionString.
-			if (debug)
-				builder.AddAzureKeyVault(initialConfig["AzureKeyVaultUri"], initialConfig["AppId"], initialConfig["AppSecret"]);
-			else
+			try
 			{
-				// This assumes you have setup a service principle to access the key vault on behalf of this app, see **Assign a Key Vault Access Policy** above
-				var azureKeyVaultConfigOptions = new AzureKeyVaultConfigurationOptions()
+				var akvUri = initialConfig["AzureKeyVaultUri"] ?? throw new ArgumentNullException("AzureKeyVaultUri");
+				if (debug)
 				{
-					Vault = initialConfig["AzureKeyVaultUri"],
-					Client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)),
-					Manager = new DefaultKeyVaultSecretManager()
-				};
+					var appId = initialConfig["AppId"] ?? throw new ArgumentNullException("AppId");
+					var appSecret = initialConfig["AppSecret"] ?? throw new ArgumentNullException("AppSecret");
+					builder.AddAzureKeyVault(akvUri, appId, appSecret);
+				}
+				else
+				{
+					// This assumes you have setup a service principle to access the key vault on behalf of this app, see **Assign a Key Vault Access Policy** above
+					var azureKeyVaultConfigOptions = new AzureKeyVaultConfigurationOptions()
+					{
+						Vault = akvUri,
+						Client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)),
+						Manager = new DefaultKeyVaultSecretManager()
+					};
 
-				builder.AddAzureKeyVault(azureKeyVaultConfigOptions);
+					builder.AddAzureKeyVault(azureKeyVaultConfigOptions);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
 			}
 		}
 
