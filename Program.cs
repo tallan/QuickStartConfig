@@ -79,6 +79,7 @@ namespace Tallan.QuickStart.Config
 		/// 
 		/// Some Helpful Links:
 		///		Secret Manager - https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1&amp;tabs=windows#secret-manager
+		///		Environment Variables - https://docs.microsoft.com/en-us/aspnet/core/fundamentals/environments?view=aspnetcore-3.1#environments
 		/// </summary>
 		/// <returns></returns>
 		public static IConfiguration LoadConfiguration()
@@ -129,12 +130,17 @@ namespace Tallan.QuickStart.Config
 			// Do not forget to set "Copy to Output Directory" on this file in your solution
 			builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
+			// In ASP.NET you could use different appsettings for different environments using the 
+			// IWebHostEnvironment variable - See **Environment Variables** above.
+			//builder.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true);
+
 			// If you are not using Azure Key Vault you can remove this method
 			if (initialConfig["AzureKeyVaultUri"] != null)
 				AddAzureKeyVault(debug, builder, initialConfig);
 
 			// If you are not using Azure App Config you can remove this method
-			if ((debug && !string.IsNullOrEmpty(initialConfig["AzureAppConfigConnectionString"])) || (!debug && !string.IsNullOrEmpty(initialConfig["AzureKeyVaultUri"]) && !string.IsNullOrEmpty(initialConfig["AppId"])))
+			if ((debug && !string.IsNullOrEmpty(initialConfig["AzureAppConfigConnectionString"])) || 
+			    (!debug && !string.IsNullOrEmpty(initialConfig["AzureKeyVaultUri"]) && !string.IsNullOrEmpty(initialConfig["AppId"])))
 				AddAzureAppConfig(debug, builder, initialConfig);
 
 			return builder.Build();

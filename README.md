@@ -13,6 +13,9 @@ to explain how and why certain code choices were made.
 
 ## Configuration Details
 
+### Assemblies Used
+A complete breakdown of which assemblies were used for which functionality lives in the [assemblies](Docs/assemblies.md) document.
+
 ### Config Folder
 The config folder holds the main and sub objects that make up our main configuration object.  The purpose of having this is to make it so all of our configurations,
 no matter what the source, all get loaded into this one object.

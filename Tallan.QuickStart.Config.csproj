@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -36,5 +36,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties arm_x0020_templates_4createanddeploykeyvault_1json__JsonSchema="https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json" /></VisualStudio></ProjectExtensions>
 
 </Project>
