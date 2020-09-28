@@ -13,6 +13,39 @@ to explain how and why certain code choices were made.
 
 ## Configuration Details
 
+### QuickStart Config Value Locations
+Part of the beauty of this solution is that you can store configuration values in a number of different places.  However, for the purposes of the quick start these are where the default
+values are located.  Feel free to change them as you see fit.
+
+#### Secrets.json
+> - AppId
+> - TenantId
+> - AppSecret
+> - AzureAppConfigConnectionString
+> - AzureKeyVaultUri
+> - AzureConfigUri
+
+#### Appsettings.json
+> - CacheType
+> - VerboseLogging
+> - LogEntityFrameworkCalls
+> - EnableSensitiveDataLogging
+
+#### Azure Config
+> - CacheType
+> - RedisEndpoint
+> - RedisServiceName
+> - LogEntityFrameworkCalls
+> - EnableSensitiveDataLogging
+
+#### Azure Key Vault
+> - ClientId
+> - Secret
+> - TenantId
+> - RedisClientId
+> - RedisSecret
+> - ConnectionString
+
 ### Assemblies Used
 A complete breakdown of which assemblies were used for which functionality lives in the [assemblies](Docs/assemblies.md) document.
 
