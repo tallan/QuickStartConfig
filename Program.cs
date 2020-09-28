@@ -66,6 +66,7 @@ namespace Tallan.QuickStart.Config
 			// Once that is done it's as simple as calling the new method in your Startup.cs.  In addition you can register all of your dependencies
 			// either by manually entering them or by Assembly Scanning
 			// The below is an example of a say to call it where "OtherServiceName" is the name of the method in another project
+			// ToDo: Put in Assembly Scanning Example? (Pros and Cons of both)
 			// services.OtherServiceName();
 
 			// Call the App
@@ -172,6 +173,7 @@ namespace Tallan.QuickStart.Config
 				Action<AzureAppConfigurationOptions> azureAppConfigOptions;
 				if (debug)
 				{
+					//ToDo: Look into Developer Credential Version here.
 					azureAppConfigOptions = (options =>
 					{
 						// If you are using Azure Key Vault, you can connect it into App Config, see **Add a Key Vault Reference to App Configuration**
@@ -228,6 +230,7 @@ namespace Tallan.QuickStart.Config
 				var akvUri = initialConfig["AzureKeyVaultUri"] ?? throw new ArgumentNullException("AzureKeyVaultUri");
 				if (debug)
 				{
+					// ToDo: Put in example using dev credentials - ## Secrets Manager
 					var appId = initialConfig["AppId"] ?? throw new ArgumentNullException("AppId");
 					var appSecret = initialConfig["AppSecret"] ?? throw new ArgumentNullException("AppSecret");
 					builder.AddAzureKeyVault(akvUri, appId, appSecret);

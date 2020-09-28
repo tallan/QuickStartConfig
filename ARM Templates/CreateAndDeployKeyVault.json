@@ -90,18 +90,45 @@
 				"description": "Specifies whether the key vault is a standard vault or a premium vault."
 			}
 		},
-		"secretName": {
-			"type": "string",
-			"metadata": {
-				"description": "Specifies the name of the secret that you want to create."
-			}
-		},
-		"secretValue": {
+		"azureClientId": {
 			"type": "securestring",
 			"metadata": {
-				"description": "Specifies the value of the secret that you want to create."
+				"description": "Specifies the value of the AppConfig.Azure.ClientId parameter."
+			}
+		},
+		"azureSecret": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specifies the value of the AppConfig.Azure.Secret parameter."
+			}
+		},
+		"azureTenantId": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specifies the value of the AppConfig.Azure.TenantId parameter."
+			}
+		},
+		"redisClientId": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specifies the value of the AppConfig.Cache.RedisClientId parameter."
+			}
+		},
+		"redisSecret": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specifies the value of the AppConfig.Cache.RedisSecret parameter."
+			}
+		},
+		"dbConnectionString": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specifies the value of the AppConfig.Database.ConnectionString parameter."
 			}
 		}
+	},
+	"variables": {
+
 	},
 	"resources": [
 		{
@@ -136,15 +163,75 @@
 		},
 		{
 			"type": "Microsoft.KeyVault/vaults/secrets",
-			"name": "[concat(parameters('keyVaultName'), '/', parameters('secretName'))]",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('azureClientId'))]",
 			"apiVersion": "2019-09-01",
 			"location": "[parameters('location')]",
-			"dependsOn": [
-				"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-			],
-			"properties": {
-				"value": "[parameters('secretValue')]"
-			}
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('azureClientId')]"
+				}
+		},
+		{
+			"type": "Microsoft.KeyVault/vaults/secrets",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('azureSecret'))]",
+			"apiVersion": "2019-09-01",
+			"location": "[parameters('location')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('azureSecret')]"
+				}
+		},
+		{
+			"type": "Microsoft.KeyVault/vaults/secrets",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('azureTenantId'))]",
+			"apiVersion": "2019-09-01",
+			"location": "[parameters('location')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('azureTenantId')]"
+				}
+		},
+		{
+			"type": "Microsoft.KeyVault/vaults/secrets",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('redisClientId'))]",
+			"apiVersion": "2019-09-01",
+			"location": "[parameters('location')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('redisClientId')]"
+				}
+		},
+		{
+			"type": "Microsoft.KeyVault/vaults/secrets",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('redisSecret'))]",
+			"apiVersion": "2019-09-01",
+			"location": "[parameters('location')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('redisSecret')]"
+				}
+		},
+		{
+			"type": "Microsoft.KeyVault/vaults/secrets",
+			"name": "[concat(parameters('keyVaultName'), '/', parameters('dbConnectionString'))]",
+			"apiVersion": "2019-09-01",
+			"location": "[parameters('location')]",
+				"dependsOn": [
+					"[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+				],
+				"properties": {
+					"value": "[parameters('dbConnectionString')]"
+				}
 		}
 	],
 	"outputs": {
