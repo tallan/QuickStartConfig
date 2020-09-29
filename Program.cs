@@ -231,6 +231,8 @@ namespace Tallan.QuickStart.Config
 				if (debug)
 				{
 					// ToDo: Put in example using dev credentials - ## Secrets Manager
+
+					// You can use the AppID and AppSecret of the App Registration that you created to handle your key vault access
 					var appId = initialConfig["AppId"] ?? throw new ArgumentNullException("AppId");
 					var appSecret = initialConfig["AppSecret"] ?? throw new ArgumentNullException("AppSecret");
 					builder.AddAzureKeyVault(akvUri, appId, appSecret);

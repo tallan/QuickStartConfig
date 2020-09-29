@@ -237,7 +237,7 @@
 	"outputs": {
 		"AzureKeyVaultUri": {
 			"type": "securestring",
-			"value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('vaultUri')))]"
+			"value": "[reference(resourceId('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))).vaultUri]"
 		}
 	}
 }
