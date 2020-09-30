@@ -12,6 +12,8 @@ using Serilog.Extensions.Logging;
 using System;
 using System.IO;
 using System.Reflection;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Azure;
 using Tallan.QuickStart.Config.Config;
 using Tallan.QuickStart.Config.Services;
 
@@ -66,7 +68,6 @@ namespace Tallan.QuickStart.Config
 			// Once that is done it's as simple as calling the new method in your Startup.cs.  In addition you can register all of your dependencies
 			// either by manually entering them or by Assembly Scanning
 			// The below is an example of a say to call it where "OtherServiceName" is the name of the method in another project
-			// ToDo: Put in Assembly Scanning Example? (Pros and Cons of both)
 			// services.OtherServiceName();
 
 			// Call the App
@@ -158,6 +159,7 @@ namespace Tallan.QuickStart.Config
 		///		Feature Flags - https://docs.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management
 		///		Feature Flogs How To - https://docs.microsoft.com/en-us/azure/azure-app-configuration/howto-feature-filters-aspnet-core
 		///		Assign a Azure Config Access Policy - https://docs.microsoft.com/en-us/azure/azure-app-configuration/howto-integrate-azure-managed-service-identity?tabs=core2x
+		///		Using DefaultAzureCredentialOptions - https://www.rahulpnath.com/blog/defaultazurecredential_from_azure_sdk/?utm_source=site-bookmark
 		/// </summary>
 		/// <param name="debug">Check if debug for local settings vs. production</param>
 		/// <param name="builder">The configuration builder object</param>
@@ -173,7 +175,8 @@ namespace Tallan.QuickStart.Config
 				Action<AzureAppConfigurationOptions> azureAppConfigOptions;
 				if (debug)
 				{
-					//ToDo: Look into Developer Credential Version here.
+					// There are two different ways to connect into this in development mode.
+					// The first is through the TenantID, AppId and AppSecret as shown below
 					azureAppConfigOptions = (options =>
 					{
 						// If you are using Azure Key Vault, you can connect it into App Config, see **Add a Key Vault Reference to App Configuration**
@@ -182,6 +185,22 @@ namespace Tallan.QuickStart.Config
 
 						options.Connect(initialConfig["AzureAppConfigConnectionString"]);
 					});
+
+					// The other way to do it is through the DefaultAzureCredentials, see **Using DefaultAzureCredentialOptions**
+					// These default credentials SHOULD default to what you have setup in visual studio, but if they do not you can use the SharedTokenCacheUsername option
+					// This also assumes the developer has access to both the key vault and app config.
+					//azureAppConfigOptions = (options =>
+					//{
+					//	var azureCredentialOptions = new DefaultAzureCredentialOptions
+					//	{
+					//		SharedTokenCacheUsername = "<AD User Name>"
+					//	};
+					//	var credentials = new DefaultAzureCredential(azureCredentialOptions);
+
+					//	// If you are using Azure Key Vault, you can connect it into App Config, see **Assign a Azure Config Access Policy**
+					//	options.ConfigureKeyVault(kv => { kv.SetCredential(credentials); });
+					//	options.Connect(new Uri(initialConfig["AzureConfigUri"]), credentials);
+					//});
 				}
 				else
 				{
@@ -192,8 +211,7 @@ namespace Tallan.QuickStart.Config
 
 						// If you are using Azure Key Vault, you can connect it into App Config, see **Assign a Azure Config Access Policy**
 						options.ConfigureKeyVault(kv => { kv.SetCredential(credentials); });
-
-						options.Connect(new Uri(initialConfig["AzureKeyVaultUri"]), credentials);
+						options.Connect(new Uri(initialConfig["AzureConfigUri"]), credentials);
 					});
 				}
 
@@ -215,6 +233,7 @@ namespace Tallan.QuickStart.Config
 		///		Key Vault Best Practices - https://docs.microsoft.com/en-us/azure/key-vault/general/best-practices
 		///		Key Vault Access Management - https://docs.microsoft.com/en-us/azure/key-vault/general/overview-security#identity-and-access-management
 		///		Assign a Key Vault Access Policy - https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy-cli
+		///		Using DefaultAzureCredentialOptions - https://www.rahulpnath.com/blog/defaultazurecredential_from_azure_sdk/?utm_source=site-bookmark
 		/// </summary>
 		/// <param name="debug">Check if debug for local settings vs. production</param>
 		/// <param name="builder">The configuration builder object</param>
@@ -230,12 +249,31 @@ namespace Tallan.QuickStart.Config
 				var akvUri = initialConfig["AzureKeyVaultUri"] ?? throw new ArgumentNullException("AzureKeyVaultUri");
 				if (debug)
 				{
-					// ToDo: Put in example using dev credentials - ## Secrets Manager
-
-					// You can use the AppID and AppSecret of the App Registration that you created to handle your key vault access
+					// There are two different ways to connect into this in development mode.
+					// The first is through the AppID and AppSecret of the App Registration that you created to handle your key vault access
 					var appId = initialConfig["AppId"] ?? throw new ArgumentNullException("AppId");
 					var appSecret = initialConfig["AppSecret"] ?? throw new ArgumentNullException("AppSecret");
 					builder.AddAzureKeyVault(akvUri, appId, appSecret);
+
+					// The other way to do it is through the DefaultAzureCredentials, see **Using DefaultAzureCredentialOptions**
+					// These default credentials SHOULD default to what you have setup in visual studio, but if they do not you can use the SharedTokenCacheUsername option
+					//var azureCredentialOptions = new DefaultAzureCredentialOptions
+					//{
+					//	SharedTokenCacheUsername = "<AD User Name>"
+					//};
+					//var credentials = new DefaultAzureCredential(azureCredentialOptions);
+
+					//var azureKeyVaultConfigOptions = new AzureKeyVaultConfigurationOptions()
+					//{
+					//	Vault = akvUri,
+					//	Client = new KeyVaultClient(async (authority, resource, scope) =>
+					//	{
+					//		var token = await credentials.GetTokenAsync(new Azure.Core.TokenRequestContext(new[] { "https://vault.azure.net/.default" }));
+					//		return token.Token;
+					//	}),
+					//	Manager = new DefaultKeyVaultSecretManager()
+					//};
+					//builder.AddAzureKeyVault(azureKeyVaultConfigOptions);
 				}
 				else
 				{
