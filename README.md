@@ -57,6 +57,11 @@ The **AppConfig** object is hierarchical, it has beneath it several child object
 There is a **CacheConfig** object that holds all of the paramters for our cache, as well as a **Database Config** object that has details about any databases we are 
 using.
 
+### ARM Templates
+In order to make things as easy as possible on developers trying out this technology, I have created a series of
+#### Key Vault
+[![Deploy To Azure](https://raw.githubusercontent.com/tallan/QuickStartConfig/master/Images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Ftallan%2FQuickStartConfig%2Fmaster%2FARM%2520Templates%2FCreateAndDeployKeyVault.json)
+[![Visualize](https://raw.githubusercontent.com/tallan/QuickStartConfig/master/Images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Ftallan%2FQuickStartConfig%2Fmaster%2FARM%2520Templates%2FCreateAndDeployKeyVault.json)
 
 ## Contributing
 
