@@ -58,10 +58,15 @@ There is a **CacheConfig** object that holds all of the paramters for our cache,
 using.
 
 ### ARM Templates
-In order to make things as easy as possible on developers trying out this technology, I have created a series of
+In order to make things as easy as possible on developers trying out this technology, I have created a series of ARM templates that will allow you to deploy these instances as easily as possible.
 #### Key Vault
 [![Deploy To Azure](https://raw.githubusercontent.com/tallan/QuickStartConfig/master/Images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Ftallan%2FQuickStartConfig%2Fmaster%2FARM%2520Templates%2FCreateAndDeployKeyVault.json)
 [![Visualize](https://raw.githubusercontent.com/tallan/QuickStartConfig/master/Images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Ftallan%2FQuickStartConfig%2Fmaster%2FARM%2520Templates%2FCreateAndDeployKeyVault.json)
+
+FYI, in the Key Vault ARM template it will ask you for **ObjectId**.  This can be the ID of your AD account which can easily be obtained with the following Powershell Code:
+>Connect-AzAccount
+>
+>Get-AzADUser -Mail [your email address]
 
 ## Contributing
 
@@ -69,6 +74,8 @@ This project welcomes [contributions and suggestions](Docs/contribute.md).
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/).
+
+
 
 ## Issues
 
