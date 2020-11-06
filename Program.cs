@@ -12,8 +12,6 @@ using Serilog.Extensions.Logging;
 using System;
 using System.IO;
 using System.Reflection;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Azure;
 using Tallan.QuickStart.Config.Config;
 using Tallan.QuickStart.Config.Services;
 
