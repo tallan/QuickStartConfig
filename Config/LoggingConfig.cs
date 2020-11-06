@@ -2,8 +2,10 @@
 {
 	public class LoggingConfig
 	{
-		public bool VerboseLogging { get; set; }		
+		#region Properties
+		public bool VerboseLogging { get; set; }
 		public bool LogEntityFrameworkCalls { get; set; }
 		public bool EnableSensitiveDataLogging { get; set; }
+		#endregion
 	}
 }

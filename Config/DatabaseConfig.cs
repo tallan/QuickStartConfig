@@ -2,7 +2,7 @@
 {
 	public class DatabaseConfig
 	{
-		#region Variables
+		#region Properties
 		public string ConnectionString { get; set; }
 		#endregion
 	}
